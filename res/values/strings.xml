@@ -4,5 +4,7 @@
     <string name="hello">Hello World, MySeabedWallpaperActivity!</string>
     <string name="app_name">MySeabedWallpaper</string>
     <string name="wallpaper_description">sea bed alpha</string>
+    
+    <string name="wallpaper_settings">SeaBed Settings</string>
 
 </resources>

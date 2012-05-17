@@ -23,6 +23,11 @@
 		        android:resource="@xml/seabedlivewallpaper"
 		        />
 		</service>
+		
+		<activity 
+		    android:name=".SeabedWallSettingsActivity"
+		    android:exported="true"
+		    ></activity>
 		    	
     </application>
 

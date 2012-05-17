@@ -41,7 +41,7 @@ public class SeabedWall extends WallpaperService {
 		private Bitmap background = null;
 		private Bitmap wave1 = null;
 		private Bitmap wave2 = null;
-		private Paint mPaint = new Paint();
+		private Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 		
 		@Override
 		public void onCreate(SurfaceHolder surfaceHolder) {
@@ -95,8 +95,10 @@ public class SeabedWall extends WallpaperService {
 				Bitmap newBackground = BitmapFactory.decodeResource(getResources(), R.drawable.background);
 				this.sizeRate = this.screenWidth * 1.0f / newBackground.getWidth();
 				this.background = Bitmap.createScaledBitmap(newBackground, screenWidth, screenHeight, true);
-			}			
+			}				
+			
 			canvas.drawBitmap(background, 0, 0, this.mPaint);
+			canvas.drawARGB(128, 90, 100, 110);
 		}
 		
 		private void drawWave(Canvas canvas){

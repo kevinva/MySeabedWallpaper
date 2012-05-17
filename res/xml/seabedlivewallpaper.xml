@@ -2,4 +2,5 @@
 <wallpaper xmlns:android="http://schemas.android.com/apk/res/android"
     android:thumbnail="@drawable/thumbnail"    
     android:description="@string/wallpaper_description"
+    android:settingsActivity="cn.kevin.seabedwallpaper.SeabedWallSettingsActivity"
     />
