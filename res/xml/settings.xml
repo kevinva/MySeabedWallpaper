@@ -4,6 +4,29 @@
     android:title="@string/wallpaper_settings"
     android:key="seabedsettings"
      >
-    
+     <ListPreference
+        android:key="background_color"
+        android:title="@string/background_color_title"
+        android:summary="@string/background_color_summary"
+        android:entries="@array/background_color_list"
+        android:entryValues="@array/background_color_list"
+        android:defaultValue="None"
+        />
+     <ListPreference
+        android:key="background_type"
+        android:title="@string/background_type_title"
+        android:summary="@string/background_type_summary"
+        android:entries="@array/background_type_list"
+        android:entryValues="@array/background_type_list"
+        android:defaultValue="Texture"
+        />
+     <ListPreference
+        android:key="touch_icon"
+        android:title="@string/touch_icon_title"
+        android:summary="@string/touch_icon_summary"
+        android:entries="@array/touch_icon_list"
+        android:entryValues="@array/touch_icon_list"
+        android:defaultValue="None"
+        />
 
 </PreferenceScreen>

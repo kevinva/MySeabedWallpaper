@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="background_color_list">
+        <item>None</item>
+        <item>Red</item>
+        <item>Blue</item>
+        <item>Green</item>
+    </string-array>
+    
+    <string-array name="background_type_list">
+        <item>Texture</item>
+        <item>Gradient</item>
+        <item>None</item>
+    </string-array>
+    
+    <string-array name="touch_icon_list">
+        <item>None</item>
+        <item>Circle</item>
+        <item>Heart</item>
+    </string-array>
+    
+</resources>

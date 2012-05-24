@@ -6,5 +6,13 @@
     <string name="wallpaper_description">sea bed alpha</string>
     
     <string name="wallpaper_settings">SeaBed Settings</string>
+    <string name="background_color_title">Change Color</string>
+    <string name="background_color_summary">change the color of the wave</string>
+    <string name="background_type_title">Change Background Type</string>
+    <string name="background_type_summary">change the type of the background</string>
+    <string name="touch_icon_title">Touch Point Icon</string>
+    <string name="touch_icon_summary">Choose a touch point icon you like</string>
+    <string name="wave_speed_title">Wave Speed</string>
+    <string name="wvae_speed_summary">Sets how fast the wave moves</string>
 
 </resources>
