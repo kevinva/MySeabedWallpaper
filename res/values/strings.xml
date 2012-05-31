@@ -13,6 +13,8 @@
     <string name="touch_icon_title">Touch Point Icon</string>
     <string name="touch_icon_summary">Choose a touch point icon you like</string>
     <string name="wave_speed_title">Wave Speed</string>
-    <string name="wvae_speed_summary">Sets how fast the wave moves</string>
+    <string name="wave_speed_summary">Sets how fast the wave moves</string>
 
+    <string name="progress_summary">Set the wave speed 0 slow to 100 fast</string>
+    
 </resources>

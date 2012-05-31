@@ -291,9 +291,8 @@ public class SeabedWall extends WallpaperService {
 				System.out.println("move");
 				
 				this.touchPointX = event.getX() - 20;
-				this.touchPointY = event.getY() - 20;
-				
-				System.out.println("x=" + this.touchPointX + ", y=" + this.touchPointY);
+				this.touchPointY = event.getY() - 20;				
+
 			}
 			
 			if(event.getAction() == MotionEvent.ACTION_UP){

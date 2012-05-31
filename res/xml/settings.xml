@@ -28,5 +28,11 @@
         android:entryValues="@array/touch_icon_list"
         android:defaultValue="None"
         />
+     <cn.kevin.seabedwallpaper.SeekBarPreference
+        android:dialogTitle="@string/wave_speed_title"
+        android:title="@string/wave_speed_title"
+        android:summary="@string/wave_speed_summary"
+        android:dialogLayout="@layout/seekbar_prefs_dialog"        
+        />
 
 </PreferenceScreen>
