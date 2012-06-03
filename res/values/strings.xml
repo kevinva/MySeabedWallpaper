@@ -15,6 +15,6 @@
     <string name="wave_speed_title">Wave Speed</string>
     <string name="wave_speed_summary">Sets how fast the wave moves</string>
 
-    <string name="progress_summary">Set the wave speed 0 slow to 100 fast</string>
+    <string name="progress_summary" formatted="false">Set the wave speed 0% slow to 100% fast</string>
     
 </resources>

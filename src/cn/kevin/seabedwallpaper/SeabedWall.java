@@ -13,8 +13,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.service.wallpaper.WallpaperService;
-import android.view.GestureDetector;
-import android.view.GestureDetector.OnGestureListener;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
@@ -49,8 +47,10 @@ public class SeabedWall extends WallpaperService {
 		private String bgColorStr = null;
 		private String bgTypeStr = null;
 		
+		
 		private int screenHeight = -1;
-		private int screenWidth = -1;		
+		private int screenWidth = -1;
+		private float speedRate = 0;
 		private float sizeRate = 1.0f;
 		private float xPos1 = 0.0f;
 		private float xPos2 = 0.0f;
@@ -75,18 +75,22 @@ public class SeabedWall extends WallpaperService {
 
 			SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SeabedWall.this);
 			prefs.registerOnSharedPreferenceChangeListener(this);
-			this.bgColorStr = prefs.getString("background_color", "None");			
+			
+			this.bgColorStr = prefs.getString("background_color", "None");
+			
 			this.bgTypeStr = prefs.getString("background_type", "Texture");
 			
 			String touchStr = prefs.getString("touch_icon", "None");
 			if(touchStr.equals("Circle")){
 				Bitmap tempBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.touch_circle);
-				this.touchBitmap = Bitmap.createScaledBitmap(tempBitmap, tempBitmap.getWidth() / 2, tempBitmap.getHeight() / 2, true);				
+				this.touchBitmap = Bitmap.createScaledBitmap(tempBitmap, tempBitmap.getWidth() * 2 / 3, tempBitmap.getHeight() * 2 / 3, true);				
 			}else if(touchStr.equals("Heart")){
 				Bitmap tempBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.touch_heart);
-				this.touchBitmap = Bitmap.createScaledBitmap(tempBitmap, tempBitmap.getWidth() / 2, tempBitmap.getHeight() / 2, true);
+				this.touchBitmap = Bitmap.createScaledBitmap(tempBitmap, tempBitmap.getWidth() * 2 / 3, tempBitmap.getHeight() * 2 / 3, true);
 			}
 			
+			int progress = prefs.getInt("wave_speed_progress", 70);
+			this.speedRate = progress / 100.0f;
 		}
 
 		@Override
@@ -101,7 +105,16 @@ public class SeabedWall extends WallpaperService {
 		@Override
 		public void onSurfaceCreated(SurfaceHolder holder) {
 			// TODO Auto-generated method stub
-			super.onSurfaceCreated(holder);			
+			super.onSurfaceCreated(holder);
+			Canvas canvas = holder.lockCanvas();
+			this.screenWidth = canvas.getWidth();
+			this.screenHeight = canvas.getHeight();
+			Bitmap newBackground = BitmapFactory.decodeResource(getResources(), R.drawable.background);
+			this.sizeRate = this.screenWidth * 1.0f / newBackground.getWidth();
+			newBackground.recycle();
+			newBackground = null;
+			holder.unlockCanvasAndPost(canvas);
+			
 			mHandler.sendEmptyMessage(DRAW);
 		}
 
@@ -119,19 +132,17 @@ public class SeabedWall extends WallpaperService {
 		private void drawWallpaper(){
 			SurfaceHolder holder = this.getSurfaceHolder();
 			Canvas canvas = holder.lockCanvas();
-			if(this.screenWidth < 0){
-				this.screenWidth = canvas.getWidth();
-			}
-			if(this.screenHeight < 0){
-				this.screenHeight = canvas.getHeight();
-			}
+			
 			drawBackground(canvas);
+			
 			drawWave(canvas);	
+			
 			if(touching && touchBitmap != null){
 				System.out.println("draw touch!!!");
 				
 				canvas.drawBitmap(touchBitmap, touchPointX, touchPointY, bgPaint);
 			}
+			
 			holder.unlockCanvasAndPost(canvas);
 			
 			mHandler.removeMessages(DRAW);
@@ -139,39 +150,59 @@ public class SeabedWall extends WallpaperService {
 		}
 		
 		private void drawBackground(Canvas canvas){
+
+			/*
+			int[] colors = new int[]{Color.WHITE, Color.GREEN};
+			this.bgBitmapShader = null;
+			this.bgBitmapShader = new BitmapShader(this.background, Shader.TileMode.CLAMP, Shader.TileMode.MIRROR);
+			this.bgLinearGradient = null;
+			this.bgLinearGradient = new LinearGradient(0, 0, screenWidth, screenHeight, colors, null, TileMode.REPEAT);
+			this.bgComposeShader = null;
+			this.bgComposeShader = new ComposeShader(this.bgBitmapShader, this.bgLinearGradient, PorterDuff.Mode.DARKEN);
+			this.bgPaint.setShader(bgComposeShader);
+			
+			//canvas.drawRect(0, 0, screenWidth, screenHeight, bgPaint);		
+			*/
 			
 			if(this.background == null){
 				if(this.bgTypeStr.equals("Texture")){					
 					Bitmap newBackground = BitmapFactory.decodeResource(getResources(), R.drawable.background);
-					this.sizeRate = this.screenWidth * 1.0f / newBackground.getWidth();
-					this.background = Bitmap.createScaledBitmap(newBackground, screenWidth, screenHeight, true);
-							
+					this.background = Bitmap.createScaledBitmap(newBackground, screenWidth, screenHeight, true);						
 				}else if(this.bgTypeStr.equals("Gradient")){	
 					Bitmap newBackground = BitmapFactory.decodeResource(getResources(), R.drawable.solidbackground);
-					this.sizeRate = this.screenWidth * 1.0f / newBackground.getWidth();
-					this.background = Bitmap.createScaledBitmap(newBackground, screenWidth, screenHeight, true);
-		
+					this.background = Bitmap.createScaledBitmap(newBackground, screenWidth, screenHeight, true);	
 				}else if(this.bgTypeStr.equals("None")){
-					
+					this.background = null;
 				}
-				
-				/*
-				int[] colors = new int[]{Color.WHITE, Color.GREEN};
-				this.bgBitmapShader = null;
-				this.bgBitmapShader = new BitmapShader(this.background, Shader.TileMode.CLAMP, Shader.TileMode.MIRROR);
-				this.bgLinearGradient = null;
-				this.bgLinearGradient = new LinearGradient(0, 0, screenWidth, screenHeight, colors, null, TileMode.REPEAT);
-				this.bgComposeShader = null;
-				this.bgComposeShader = new ComposeShader(this.bgBitmapShader, this.bgLinearGradient, PorterDuff.Mode.DARKEN);
-				this.bgPaint.setShader(bgComposeShader);
-				*/
 			}
+
+			if(this.background != null){
+				canvas.drawBitmap(background, 0, 0, bgPaint);
+			}			
 			
-			//canvas.drawRect(0, 0, screenWidth, screenHeight, bgPaint);		
-			
-			
-			canvas.drawBitmap(background, 0, 0, bgPaint);
+			int a = 0;
+			int r = 0;
+			int g = 0;
+			int b = 0;
+			if(this.bgColorStr.equals("Red")){
+				a = RED[0];
+				r = RED[1];
+				g = RED[2];
+				b = RED[3];
+			}else if(this.bgColorStr.equals("Blue")){
+				a = BLUE[0];
+				r = BLUE[1];
+				g = BLUE[2];
+				b = BLUE[3];
+			}else if(this.bgColorStr.equals("Green")){
+				a = GREEN[0];
+				r = GREEN[1];
+				g = GREEN[2];
+				b = GREEN[3];
+			}
+			canvas.drawARGB(a, r, g, b);
 		}
+		
 		
 		private void drawWave(Canvas canvas){
 			if(this.wave1 == null){
@@ -200,9 +231,9 @@ public class SeabedWall extends WallpaperService {
 			}
 			
 			canvas.drawBitmap(wave1, xPos1, screenHeight * 0.5f, this.wavePaint);			
-			xPos1 -= 8;
+			xPos1 -= 8 * this.speedRate;
 			canvas.drawBitmap(wave2, xPos2, screenHeight * 0.5f, this.wavePaint);
-			xPos2 -= 8;
+			xPos2 -= 8 * this.speedRate;
 
 		}
 		
@@ -241,36 +272,52 @@ public class SeabedWall extends WallpaperService {
 				
 			}else if(key.equals("background_type")){
 				this.bgTypeStr = sharedPreferences.getString(key, "Texture");
-				
 				if(this.background != null){
 					this.background.recycle();
 					this.background = null;
 				}
+				if(this.bgTypeStr.equals("Texture")){					
+					Bitmap newBackground = BitmapFactory.decodeResource(getResources(), R.drawable.background);
+					this.sizeRate = this.screenWidth * 1.0f / newBackground.getWidth();
+					this.background = Bitmap.createScaledBitmap(newBackground, screenWidth, screenHeight, true);
+							
+				}else if(this.bgTypeStr.equals("Gradient")){	
+					Bitmap newBackground = BitmapFactory.decodeResource(getResources(), R.drawable.solidbackground);
+					this.sizeRate = this.screenWidth * 1.0f / newBackground.getWidth();
+					this.background = Bitmap.createScaledBitmap(newBackground, screenWidth, screenHeight, true);
+		
+				}else if(this.bgTypeStr.equals("None")){
+					if(this.background != null){
+						this.background.recycle();
+						this.background = null;
+					}
+				}
 				
 			}else if(key.equals("touch_icon")){
 				String touchStr =  sharedPreferences.getString(key, "None");
+				if(this.touchBitmap != null){
+					this.touchBitmap.recycle();
+					this.touchBitmap = null;						
+				}
 				if(touchStr.equals("Circle")){
-					if(this.touchBitmap != null){
-						this.touchBitmap.recycle();
-						this.touchBitmap = null;						
-					}
 					Bitmap tempBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.touch_circle);
-					this.touchBitmap = Bitmap.createScaledBitmap(tempBitmap, tempBitmap.getWidth() / 2, tempBitmap.getHeight() / 2, true);
+					this.touchBitmap = Bitmap.createScaledBitmap(tempBitmap, tempBitmap.getWidth() * 2 / 3, tempBitmap.getHeight() * 2 / 3, true);
 					
 				}else if(touchStr.equals("Heart")){
-					if(this.touchBitmap != null){
-						this.touchBitmap.recycle();
-						this.touchBitmap = null;						
-					}
 					Bitmap tempBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.touch_heart);
-					this.touchBitmap = Bitmap.createScaledBitmap(tempBitmap, tempBitmap.getWidth() / 2, tempBitmap.getHeight() / 2, true);
+					this.touchBitmap = Bitmap.createScaledBitmap(tempBitmap, tempBitmap.getWidth() * 2 / 3, tempBitmap.getHeight() * 2 / 3, true);
+				
 				}else if(touchStr.equals("None")){
 					if(this.touchBitmap != null){
 						this.touchBitmap.recycle();
 						this.touchBitmap = null;
 					}
 				}
-			}			
+				
+			}else if(key.equals("wave_speed_progress")){
+				int progress = sharedPreferences.getInt(key, 70);
+				this.speedRate = progress / 100.0f;
+			}
 		}		
 		
 
